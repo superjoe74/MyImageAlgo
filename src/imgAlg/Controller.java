@@ -9,5 +9,4 @@ public class Controller {
 		model = new Model(1600, 900);
 		view = new View(model);
 	}
-	
 }
