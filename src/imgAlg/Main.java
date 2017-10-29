@@ -2,6 +2,6 @@ package imgAlg;
 
 public class Main {
 	public static void main(String[] args) {
-		new Controller();
+		new Controller(1600, 900);
 	}
 }

@@ -5,8 +5,7 @@ public class Controller {
 	private Model model;
 	private View view;
 	
-	public Controller() {
-		model = new Model(1600, 900);
-		view = new View(model);
+	public Controller(int w, int h) {
+		model = new Model(w, h);
 	}
 }
