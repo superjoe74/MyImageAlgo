@@ -7,5 +7,7 @@ public class Controller {
 	
 	public Controller(int w, int h) {
 		model = new Model(w, h);
+		view = new View(model);
+		
 	}
 }

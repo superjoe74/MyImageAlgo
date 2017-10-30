@@ -5,49 +5,36 @@ import java.awt.image.PixelGrabber;
 
 public class MyImage {
 
-	private Image bigImage, littleImage;
-	private int bigWidth, littleWidth, bigHeight, littleHeight;
+	private Image image;
+	private int width, height;
 	private int[] pixel;
-	
-	public MyImage(Image big, Image little, int w1, int h1, int w2, int h2) {
-		bigImage = big;
-		littleImage = little;
-		bigWidth = w1;
-		littleWidth = w2;
-		bigHeight = h1;
-		littleHeight = h2;
-		pixel = new int[w1 * h1];
-		PixelGrabber grab = new PixelGrabber(big, 0, 0, w1, h1, pixel, 0, w1);
+
+	public MyImage(Image big, int w, int h) {
+		image = big.getScaledInstance(w, h, Image.SCALE_SMOOTH);
+		width = w;
+		height = h;
+		pixel = new int[w * h];
+		PixelGrabber grab = new PixelGrabber(big, 0, 0, w, h, pixel, 0, w);
 		try {
 			grab.grabPixels();
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		System.out.println(image);
+
 	}
 
-	public Image getBigImage() {
-		return bigImage;
+	public Image getImage() {
+		return image;
 	}
 
-	public Image getLittleImage() {
-		return littleImage;
+	public int getWidth() {
+		return width;
 	}
 
-	public int getBigWidth() {
-		return bigWidth;
-	}
-
-	public int getLittleWidth() {
-		return littleWidth;
-	}
-
-	public int getBigHeight() {
-		return bigHeight;
-	}
-
-	public int getLittleHeight() {
-		return littleHeight;
+	public int getHeight() {
+		return height;
 	}
 
 	public int[] getPixel() {
