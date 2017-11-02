@@ -11,16 +11,16 @@ public class PreviewImageComponent extends JComponent {
 	
 	MyImage img;
 
-	public PreviewImageComponent(MyImage img) {
+	public PreviewImageComponent(MyImage img, CenterPanel cPan) {
 		this.img = img;
 		setPreferredSize(new Dimension(192, 108));
 		addMouseListener(new MouseAdapter() {
-						@Override
+			@Override
 			public void mousePressed(MouseEvent e) {
-				System.out.println("clicked");
+				cPan.setImage(img.getPixel());
+				System.out.println(img.getPixel().length);
 			}
 		});
-		
 	}
 
 	@Override
@@ -28,8 +28,5 @@ public class PreviewImageComponent extends JComponent {
 		super.paintComponent(g);
 		g.drawLine(0, 0, 50, 50);
 		g.drawImage(img.getImage(), 0, 0, getWidth(), getHeight(), this);
-		// g.drawImage(img.getImage(), 100, 100, this);
-		System.out.println("painted smallpic");
-		System.out.println(img.getImage().getWidth(this) + " " + getWidth());
 	}
 }

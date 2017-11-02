@@ -10,6 +10,7 @@ import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class View extends JFrame {
@@ -25,15 +26,21 @@ public class View extends JFrame {
 		setLayout(new BorderLayout());
 		setSize(1600, 900);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
-		sPan = new SouthPanel(model);
-		add(sPan, BorderLayout.SOUTH);
-		pack();
-		setVisible(true);
 
 		fC.selectImages();
+
+		cPan = new CenterPanel(model.getImages().get(0));
+		add(cPan, BorderLayout.CENTER);
+
+		sPan = new SouthPanel(model, cPan);
 		sPan.addComps();
 		sPan.revalidate();
 		sPan.repaint();
+		
+		JScrollPane scroll = new JScrollPane(sPan, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+		add(scroll, BorderLayout.SOUTH);
+		setVisible(true);
+
 	}
 
 	class MyFileChooser extends JFileChooser {
@@ -57,7 +64,6 @@ public class View extends JFrame {
 					Image img = ImageIO.read(files[i]);
 					mt.addImage(img, i);
 					mt.waitForAll();
-					System.out.println(img);
 					model.addImage(new MyImage(img, model.getBigDim().width, model.getBigDim().height));
 				}
 			} catch (Exception e) {
@@ -65,5 +71,13 @@ public class View extends JFrame {
 			}
 			revalidate();
 		}
+	}
+
+	public SouthPanel getsPan() {
+		return sPan;
+	}
+
+	public CenterPanel getcPan() {
+		return cPan;
 	}
 }
