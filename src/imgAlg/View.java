@@ -9,7 +9,6 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
-import javax.swing.JMenuBar;
 import javax.swing.JScrollPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
@@ -18,7 +17,6 @@ public class View extends JFrame {
 	private Model model;
 	private CenterPanel cPan;
 	private SouthPanel sPan;
-	private JMenuBar bar;
 
 	public View(Model model) {
 		this.model = model;
@@ -26,21 +24,20 @@ public class View extends JFrame {
 		setLayout(new BorderLayout());
 		setSize(1600, 900);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 
 		fC.selectImages();
 
-		cPan = new CenterPanel(model.getImages().get(0));
+		cPan = new CenterPanel();
 		add(cPan, BorderLayout.CENTER);
 
 		sPan = new SouthPanel(model, cPan);
 		sPan.addComps();
 		sPan.revalidate();
-		sPan.repaint();
 		
 		JScrollPane scroll = new JScrollPane(sPan, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(scroll, BorderLayout.SOUTH);
 		setVisible(true);
-
 	}
 
 	class MyFileChooser extends JFileChooser {

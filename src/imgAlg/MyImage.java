@@ -14,7 +14,7 @@ public class MyImage {
 		width = w;
 		height = h;
 		pixel = new int[w * h];
-		PixelGrabber grab = new PixelGrabber(big, 0, 0, w, h, pixel, 0, w);
+		PixelGrabber grab = new PixelGrabber(image, 0, 0, w, h, pixel, 0, w);
 		try {
 			grab.grabPixels();
 		} catch (InterruptedException e) {

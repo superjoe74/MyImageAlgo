@@ -7,22 +7,15 @@ import java.awt.image.MemoryImageSource;
 import javax.swing.JComponent;
 
 public class CenterPanel extends JComponent{
-	
-	private MyImage image;
+
 	private MemoryImageSource src;
-	private Image current;
+	private Image image;
 	private int[] pixel;
 	
-	public CenterPanel(MyImage image) {
-		this.image = image;
+	public CenterPanel() {
 		pixel = new int[1280*720];
-		System.out.println(pixel.length);
-		setSize(image.getWidth(), image.getHeight());
-		pixel = image.getPixel();
-		src = new MemoryImageSource(image.getWidth(), image.getHeight(), pixel, 0, image.getWidth());
+		src = new MemoryImageSource(1280, 720, pixel, 0, 1280);
 		src.setAnimated(true);
-		current = createImage(src);
-
 	}
 	
 	public void setImage(int[] pixel) {
@@ -30,19 +23,13 @@ public class CenterPanel extends JComponent{
 			this.pixel[i] = pixel[i];
 		}
 		src.newPixels();
-		current = createImage(src);
-		getGraphics().drawImage(current, 0, 0, this);
+		image = createImage(src);
+		repaint();
 	}
 	
 	@Override
 	public void paintComponent(Graphics g) {
+		g.drawImage(image, getWidth()/2 - 640, getHeight()/2 - 360, 1280, 720, this);
 	}
 	
-	@Override
-	public void update(Graphics g) {
-	}
-	
-	@Override
-	public void paint(Graphics g) {
-	}
 }
