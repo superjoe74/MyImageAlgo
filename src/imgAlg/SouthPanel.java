@@ -20,7 +20,6 @@ public class SouthPanel extends JPanel{
 		this.model = model;
 		this.cPan = cPan;
 		imageComponents = new ArrayList<PreviewImageComponent>(10);
-		fade = new ImageFade(imageComponents, cPan);
 	}
 	
 	public void addComps() {
@@ -29,11 +28,17 @@ public class SouthPanel extends JPanel{
 			pic.addMouseListener(new MouseAdapter() {
 				@Override
 				public void mousePressed(MouseEvent e) {
-					cPan.setImage(pic.getImg().getPixel());
-					if(SwingUtilities.isRightMouseButton(e))
+					
+					if(SwingUtilities.isRightMouseButton(e)) {
 						pic.setSelected(!pic.isSelected());
-//						if(pic.isSelected() == true && (fade == null || fade.isActive() == false))
-//							fade = new ImageFade(imageComponents, cPan);
+						if(pic.isSelected() == true && (fade == null || fade.isActive() == false))
+							fade = new ImageFade(imageComponents, cPan, getThis());
+					}
+					else {
+						cPan.setImage(pic.getImg().getPixel());
+						pic.repaint();
+						repaint();
+					}
 				}
 			});
 			add(pic);
@@ -44,4 +49,7 @@ public class SouthPanel extends JPanel{
 	public ArrayList<PreviewImageComponent> getImageComponents() {
 		return imageComponents;
 	} 
+	private SouthPanel getThis(){
+		return this;
+	}
 }

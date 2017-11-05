@@ -9,9 +9,11 @@ public class PreviewImageComponent extends JComponent {
 	
 	private MyImage img;
 	private boolean selected;
+	private CenterPanel cP;
 
-	public PreviewImageComponent(MyImage img, CenterPanel cPan) {
+	public PreviewImageComponent(MyImage img, CenterPanel cP) {
 		this.img = img;
+		this.cP = cP;
 		setPreferredSize(new Dimension(192, 108));
 		
 	}
@@ -19,7 +21,11 @@ public class PreviewImageComponent extends JComponent {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		g.drawImage(img.getImage(), 0, 0, getWidth(), getHeight(), this);
+		if (img.getPixel()[500000] == cP.getPixel()[500000]) {
+			g.drawImage(img.getImage(), 0, 0, getWidth(), getHeight(), this);
+		}else {
+			g.drawImage(img.getImage(), 19, 11, getWidth() - 38, getHeight() - 22, this);
+		}
 	}
 
 	public MyImage getImg() {

@@ -16,6 +16,7 @@ public class CenterPanel extends JComponent{
 		pixel = new int[1280*720];
 		src = new MemoryImageSource(1280, 720, pixel, 0, 1280);
 		src.setAnimated(true);
+		image = createImage(src);
 	}
 	
 	public void setImage(int[] pixel) {
@@ -23,7 +24,6 @@ public class CenterPanel extends JComponent{
 			this.pixel[i] = pixel[i];
 		}
 		src.newPixels();
-		image = createImage(src);
 		repaint();
 	}
 	
@@ -31,5 +31,12 @@ public class CenterPanel extends JComponent{
 	public void paintComponent(Graphics g) {
 		g.drawImage(image, getWidth()/2 - 640, getHeight()/2 - 360, 1280, 720, this);
 	}
-	
+
+	public int[] getPixel() {
+		return pixel;
+	}
+	@Override
+	public void update(Graphics g) {
+		paintComponent(g);
+	}
 }

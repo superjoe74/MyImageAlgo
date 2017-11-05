@@ -2,6 +2,7 @@ package imgAlg;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
+import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.MediaTracker;
 import java.io.File;
@@ -76,5 +77,10 @@ public class View extends JFrame {
 
 	public CenterPanel getcPan() {
 		return cPan;
+	}
+	
+	@Override
+	public void update(Graphics g) {
+		paintComponents(g);
 	}
 }
