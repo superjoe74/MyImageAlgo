@@ -27,17 +27,18 @@ public class ImageFade implements Runnable {
 				if (imageComponents.get(i).isSelected()) {
 					if (pix_1 == null) {
 						pix_1 = imageComponents.get(i).getImg().getPixel();
-					}else if (pix_2 == null) {
+					} else if (pix_2 == null) {
 						pix_2 = imageComponents.get(i).getImg().getPixel();
 						fade();
-						sP.repaint();
 						pix_2 = null;
+//						try {
+//
+//						Thread.sleep(1111);
+//						} catch (InterruptedException e) {
+//							e.printStackTrace();
+//						}
 					}
-					try {
-						Thread.sleep(1111);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
+
 				}
 				if (pix_1 == pix_2) {
 					active = false;
@@ -50,10 +51,16 @@ public class ImageFade implements Runnable {
 	private void fade() {
 		int[] pix_3 = new int[pix_1.length];
 		for (int i = 0; i < 101; i++) {
-			for (int j = 0; j < pix_3.length; j++) {
+			System.out.println("mehr Energie");
+			for (int j = 0; j < pix_3.length; j++)	{
+				//System.out.println("gleich wird gemischt");
 				pix_3[j] = mixPixels(i, j);
+				//System.out.println("gemischt");
 			}
+			//			System.out.println("achtung");
 			cP.setImage(pix_3);
+			//System.out.println("Feddich");
+			//sP.repaint();
 		}
 		pix_1 = pix_2;
 	}
@@ -66,7 +73,7 @@ public class ImageFade implements Runnable {
 	}
 
 	private int mixColors(int i, int j, int p) {
-		 return i+(j-i)*p/100;
+		return i + (j - i) * p / 100;
 	}
 
 	public boolean isActive() {
