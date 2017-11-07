@@ -3,8 +3,6 @@ package imgAlg;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.util.ArrayList;
-
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -12,14 +10,11 @@ public class SouthPanel extends JPanel{
 	
 	private Model model;
 	private CenterPanel cPan;
-	private ArrayList<PreviewImageComponent> imageComponents;
-	private ImageFade fade;
 	
 	public SouthPanel(Model model, CenterPanel cPan) {
 		setLayout(new FlowLayout());
 		this.model = model;
 		this.cPan = cPan;
-		imageComponents = new ArrayList<PreviewImageComponent>(10);
 	}
 	
 	public void addComps() {
@@ -29,27 +24,16 @@ public class SouthPanel extends JPanel{
 				@Override
 				public void mousePressed(MouseEvent e) {
 					
-					if(SwingUtilities.isRightMouseButton(e)) {
-						pic.setSelected(!pic.isSelected());
-						if(pic.isSelected() == true && (fade == null || fade.isActive() == false))
-							fade = new ImageFade(imageComponents, cPan, getThis());
-					}
+					if(SwingUtilities.isRightMouseButton(e)) 
+						pic.getImg().setSelectedForFade(!pic.getImg().isSelectedForFade());
 					else {
-						cPan.setImage(pic.getImg());
+						cPan.setCurrentImg(pic.getImg());
 						pic.repaint();
 						repaint();
 					}
 				}
 			});
 			add(pic);
-			imageComponents.add(pic);
 		}
-	}
-
-	public ArrayList<PreviewImageComponent> getImageComponents() {
-		return imageComponents;
-	} 
-	private SouthPanel getThis(){
-		return this;
 	}
 }

@@ -9,6 +9,7 @@ public class MyImage {
 	private int width, height;
 	private int[] pixel;
 	private MyMatrix morphMatrix;
+	private boolean selectedForFade;
 
 	public MyImage(Image big, int w, int h) {
 		image = big.getScaledInstance(w, h, Image.SCALE_SMOOTH);
@@ -22,7 +23,7 @@ public class MyImage {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+		morphMatrix = MyMatrix.getNeutralMatrix();
 	}
 
 	public Image getImage() {
@@ -39,5 +40,30 @@ public class MyImage {
 
 	public int[] getPixel() {
 		return pixel;
+	}
+
+	public void setPixel(int[] pixel) {
+//		for (int i = 0; i < pixel.length; i++) {
+			this.pixel = pixel;
+//		}
+	}
+
+	public boolean isSelectedForFade() {
+		return selectedForFade;
+	}
+
+	public void setSelectedForFade(boolean selectedForFade) {
+		this.selectedForFade = selectedForFade;
+	}
+
+	public MyMatrix getMorphMatrix() {
+		return morphMatrix;
+	}
+
+	public void setMorphMatrix(MyMatrix morphMatrix) {
+		for (int i = 0; i < morphMatrix.getData().length; i++) {
+			for (int j = 0; j < morphMatrix.getData().length; j++) {
+				this.morphMatrix.getData()[i][j] = morphMatrix.getData()[i][j];
+			}		}
 	}
 }

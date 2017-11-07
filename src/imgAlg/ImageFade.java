@@ -4,17 +4,15 @@ import java.util.ArrayList;
 
 public class ImageFade implements Runnable {
 
-	private ArrayList<PreviewImageComponent> imageComponents;
-	private boolean active;
-	private int[] pix_1;
-	private int[] pix_2;
+	private ArrayList<MyImage> images;
+	private volatile boolean active;
+	private MyImage img_1;
+	private MyImage img_2;
 	private CenterPanel cP;
-	private SouthPanel sP;
 
-	public ImageFade(ArrayList<PreviewImageComponent> imageComponents, CenterPanel c, SouthPanel s) {
-		this.imageComponents = imageComponents;
+	public ImageFade(ArrayList<MyImage> images, CenterPanel c) {
+		this.images = images;
 		cP = c;
-		sP = s;
 		active = true;
 		Thread th = new Thread(this);
 		th.start();
@@ -23,25 +21,22 @@ public class ImageFade implements Runnable {
 	@Override
 	public void run() {
 		while (active) {
-			for (int i = 0; i < imageComponents.size(); i++) {
-				if (imageComponents.get(i).isSelected()) {
-					if (pix_1 == null) {
-						pix_1 = imageComponents.get(i).getImg().getPixel();
-					} else if (pix_2 == null) {
-						pix_2 = imageComponents.get(i).getImg().getPixel();
+			for (int i = 0; i < images.size(); i++) {
+				if (images.get(i).isSelectedForFade()) {
+					if (img_1 == null) {
+						img_1 = cP.getCurrentImg();
+					} else if (img_2 == null) {
+						img_2 = images.get(i);
 						fade();
-						pix_2 = null;
-//						try {
-//
-//						Thread.sleep(1111);
-//						} catch (InterruptedException e) {
-//							e.printStackTrace();
-//						}
+						img_2 = null;
+						try {
+
+						Thread.sleep(1111);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
 
-				}
-				if (pix_1 == pix_2) {
-					active = false;
 				}
 			}
 		}
@@ -49,26 +44,23 @@ public class ImageFade implements Runnable {
 	}
 
 	private void fade() {
-		int[] pix_3 = new int[pix_1.length];
+		int[] pix_3 = new int[img_1.getPixel().length];
 		for (int i = 0; i < 101; i++) {
-			System.out.println("mehr Energie");
 			for (int j = 0; j < pix_3.length; j++)	{
-				//System.out.println("gleich wird gemischt");
 				pix_3[j] = mixPixels(i, j);
-				//System.out.println("gemischt");
 			}
-			//			System.out.println("achtung");
-			cP.setImage(pix_3);
-			//System.out.println("Feddich");
-			//sP.repaint();
+			cP.setPixel(pix_3);
 		}
-		pix_1 = pix_2;
+		img_1 = img_2;
+		if (active == false) {
+			cP.setCurrentImg(img_2);
+		}
 	}
 
 	private int mixPixels(int p, int j) {
-		int red = mixColors((pix_1[j] >> 16) & 0xff, (pix_2[j] >> 16) & 0xff, p);
-		int green = mixColors((pix_1[j] >> 8) & 0xff, (pix_2[j] >> 8) & 0xff, p);
-		int blue = mixColors(pix_1[j] & 0xff, pix_2[j] & 0xff, p);
+		int red = mixColors((img_1.getPixel()[j] >> 16) & 0xff, (img_2.getPixel()[j] >> 16) & 0xff, p);
+		int green = mixColors((img_1.getPixel()[j] >> 8) & 0xff, (img_2.getPixel()[j] >> 8) & 0xff, p);
+		int blue = mixColors(img_1.getPixel()[j] & 0xff, img_2.getPixel()[j] & 0xff, p);
 		return 0xff000000 | (red << 16) | (green << 8) | blue;
 	}
 
@@ -78,6 +70,10 @@ public class ImageFade implements Runnable {
 
 	public boolean isActive() {
 		return active;
+	}
+
+	public void setActive(boolean active) {
+		this.active = active;
 	}
 
 }

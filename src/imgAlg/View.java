@@ -10,7 +10,11 @@ import java.io.File;
 import javax.imageio.ImageIO;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 public class View extends JFrame {
@@ -18,6 +22,7 @@ public class View extends JFrame {
 	private Model model;
 	private CenterPanel cPan;
 	private SouthPanel sPan;
+	private JMenuItem fade;
 
 	public View(Model model) {
 		this.model = model;
@@ -38,6 +43,15 @@ public class View extends JFrame {
 		
 		JScrollPane scroll = new JScrollPane(sPan, JScrollPane.VERTICAL_SCROLLBAR_NEVER, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 		add(scroll, BorderLayout.SOUTH);
+		
+		JMenuBar bar = new JMenuBar();
+		JMenu file = new JMenu("File");
+		fade = new JMenuItem("start/stop fading");
+		fade.setAccelerator(KeyStroke.getKeyStroke("control f"));
+		setJMenuBar(bar);
+		bar.add(file);
+		file.add(fade);
+		
 		setVisible(true);
 	}
 
@@ -82,5 +96,9 @@ public class View extends JFrame {
 	@Override
 	public void update(Graphics g) {
 		paintComponents(g);
+	}
+
+	public JMenuItem getFade() {
+		return fade;
 	}
 }

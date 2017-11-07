@@ -36,12 +36,21 @@ public class MyMatrix {
 
 		for (int i = 0; i < aColumns; i++) {
 			for (int j = 0; j < b.getData().length; j++) {
-				c.setData(i, (int) (c.getData()[i] + (data[i][j]*b.getData()[i]))); 
+				c.setData(i, (int) (c.getData()[i] + (data[i][j]*b.getData()[j])));  
 			}
 		}
 		
 		
 		return c;
+	}
+	
+	public void printi() {
+		for (int i = 0; i < data.length; i++) {
+			for (int j = 0; j < data.length; j++) {
+				System.out.print(data[i][j] + " ");
+			}
+			System.out.println();
+		}
 	}
 
 	public double[][] getData() {
@@ -54,6 +63,19 @@ public class MyMatrix {
 
 	public static MyMatrix getTranslationMatrix(int x, int y) {
 		double[][] d = {{1,0,-x},{0,1,-y},{0,0,1}};
+		MyMatrix m = new MyMatrix(d);
+		return m;
+	}
+	
+	public static MyMatrix getRotationMatrix(int a) {
+		double radian = Math.toRadians(a);
+		double[][] d = {{Math.cos(radian),Math.sin(radian),0},{-Math.sin(radian),Math.cos(radian),0},{0,0,1}};
+		MyMatrix m = new MyMatrix(d);
+		return m;
+	}
+	
+	public static MyMatrix getNeutralMatrix() {
+		double[][] d = {{1,0,0},{0,1,0},{0,0,1}};
 		MyMatrix m = new MyMatrix(d);
 		return m;
 	}
