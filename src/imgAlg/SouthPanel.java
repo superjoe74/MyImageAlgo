@@ -35,7 +35,7 @@ public class SouthPanel extends JPanel{
 							fade = new ImageFade(imageComponents, cPan, getThis());
 					}
 					else {
-						cPan.setImage(pic.getImg().getPixel());
+						cPan.setImage(pic.getImg());
 						pic.repaint();
 						repaint();
 					}

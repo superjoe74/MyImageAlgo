@@ -30,10 +30,10 @@ public class CenterPanel extends JComponent{
 		});
 	}
 	
-	public void setImage(int[] pixel) {
+	public void setImage(MyImage myImage) {
 //		this.pixel = pixel;
-		for (int i = 0; i < pixel.length; i++) {
-			this.pixel[i] = pixel[i];
+		for (int i = 0; i < myImage.getPixel().length; i++) {
+			this.pixel[i] = myImage.getPixel()[i];
 		}
 		src.newPixels();
 //		image = createImage(src);
@@ -54,13 +54,13 @@ public class CenterPanel extends JComponent{
 	}
 	
 	public void translation(int x, int y) {
-		double[][] dif = {{1,0,-x},{0,1,-y},{0,0,1}}; 
+		MyMatrix dif = MyMatrix.getTranslationMatrix(x,y); 
 			for (int i = 0; i < 1280; i++) {
 				for (int j = 0; j < 720; j++) {
-					double[] cords = {i,j,1};
-					double[] newCords = MyMatrix.mult(dif, cords);
+					int[] cords = {i,j,1};
+					int[] newCords = MyMatrix.mult(dif, cords);
 					if ((newCords[0] >= 0) && (newCords[0] <= 1280) && (newCords[1] >= 0) && (newCords[1] <= 720)) {
-						newPixel[j*1280+i] = pixel[(int) (1280*newCords[1]+newCords[0])];
+						newPixel[j*1280+i] = pixel[(1280*newCords[1]+newCords[0])];
 					}
 					else {
 						newPixel[j*1280+i] = 0xffffffff;
@@ -75,10 +75,10 @@ public class CenterPanel extends JComponent{
 		double[][] dif = {{Math.cos(-d),-Math.sin(-d),0},{Math.sin(-d),Math.cos(-d),0},{0,0,1}}; 
 			for (int i = 0; i < 1280; i++) {
 				for (int j = 0; j < 720; j++) {
-					double[] cords = {i,j,1};
-					double[] newCords = MyMatrix.mult(dif, cords);
+					int[] cords = {i,j,1};
+					int[] newCords = MyMatrix.mult(dif, cords);
 					if ((newCords[0] >= 0) && (newCords[0] <= 1280) && (newCords[1] >= 0) && (newCords[1] <= 720)) {
-						newPixel[j*1280+i] = pixel[(int) (1280*newCords[1]+newCords[0])];
+						newPixel[j*1280+i] = pixel[(1280*newCords[1]+newCords[0])];
 					}
 					else {
 						newPixel[j*1280+i] = 0xffffffff;

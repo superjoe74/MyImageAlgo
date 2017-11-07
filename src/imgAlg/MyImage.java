@@ -8,6 +8,7 @@ public class MyImage {
 	private Image image;
 	private int width, height;
 	private int[] pixel;
+	private MyMatrix morphMatrix;
 
 	public MyImage(Image big, int w, int h) {
 		image = big.getScaledInstance(w, h, Image.SCALE_SMOOTH);
