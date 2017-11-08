@@ -23,7 +23,7 @@ public class CenterPanel extends JComponent{
 		addMouseListener(new MouseAdapter() {
 			@Override
 			public void mousePressed(MouseEvent e) {
-				translation(20, 10);
+				xShearing(1.01);
 //				rotation(15,true);
 				
 			}
@@ -37,7 +37,7 @@ public class CenterPanel extends JComponent{
 	
 	@Override
 	public void paintComponent(Graphics g) {
-		g.drawImage(image, getWidth()/2 - 640, getHeight()/2 - 360, 1280, 720, this);
+		g.drawImage(image, getWidth()/2 - 640, getHeight()/2 - 360, this);
 	}
 
 	public int[] getPixel() {
@@ -62,6 +62,21 @@ public class CenterPanel extends JComponent{
 			MyMatrix dif = MyMatrix.getRotationMatrix(20); 
 			morph(dif);
 		}
+	}
+	
+	public void yShearing(double y) {
+		MyMatrix dif = MyMatrix.yShearMatrix(y);
+		morph(dif);
+	}
+	
+	public void xShearing(double x) {
+		MyMatrix dif = MyMatrix.xShearMatrix(x);
+		morph(dif);
+	}
+	
+	public void scaling(double x, double y) {
+		MyMatrix dif = MyMatrix.getScaleMatrix(x,y);
+		morph(dif);
 	}
 	
 	public void morph(MyMatrix morphMatrix) {
