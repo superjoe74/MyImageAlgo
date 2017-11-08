@@ -1,6 +1,7 @@
 package imgAlg;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -8,6 +9,7 @@ import java.awt.MediaTracker;
 import java.io.File;
 
 import javax.imageio.ImageIO;
+import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -51,6 +53,19 @@ public class View extends JFrame {
 		setJMenuBar(bar);
 		bar.add(file);
 		file.add(fade);
+		
+		MenuPanel mP = new MenuPanel();
+		add(mP, BorderLayout.WEST);
+		mP.getCol_1().addActionListener(e -> {
+			Color color = JColorChooser.showDialog(this, "Choose color", mP.getCol_1().getBackground());
+			mP.getCol_1().setBackground(color);
+			cPan.setCol_1(color.getRGB());
+		});
+		mP.getCol_2().addActionListener(e -> {
+			Color color = JColorChooser.showDialog(this, "Choose color", mP.getCol_2().getBackground());
+			mP.getCol_2().setBackground(color);
+			cPan.setCol_2(color.getRGB());
+		});
 		
 		setVisible(true);
 	}

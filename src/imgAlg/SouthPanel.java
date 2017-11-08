@@ -1,5 +1,6 @@
 package imgAlg;
 
+import java.awt.Color;
 import java.awt.FlowLayout;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -13,6 +14,7 @@ public class SouthPanel extends JPanel{
 	
 	public SouthPanel(Model model, CenterPanel cPan) {
 		setLayout(new FlowLayout());
+		setBackground(Color.DARK_GRAY);
 		this.model = model;
 		this.cPan = cPan;
 	}
@@ -28,6 +30,7 @@ public class SouthPanel extends JPanel{
 						pic.getImg().setSelectedForFade(!pic.getImg().isSelectedForFade());
 					else {
 						cPan.setCurrentImg(pic.getImg());
+						cPan.setMode("line");
 						pic.repaint();
 						repaint();
 					}
