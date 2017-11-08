@@ -78,7 +78,7 @@ public class View extends JFrame {
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "png");
 			setFileFilter(filter);
 			setMultiSelectionEnabled(true);
-			setCurrentDirectory(new File("C:\\Users\\Johann Hoffer\\OneDrive\\images"));
+			setCurrentDirectory(new File("C:\\Users\\Johann\\OneDrive\\images"));
 		}
 
 		public void selectImages() {

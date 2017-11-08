@@ -10,13 +10,14 @@ public class MyImage {
 	private int[] pixel;
 	private MyMatrix morphMatrix;
 	private boolean selectedForFade;
+	private PixelGrabber grab;
 
 	public MyImage(Image big, int w, int h) {
 		image = big.getScaledInstance(w, h, Image.SCALE_SMOOTH);
 		width = w;
 		height = h;
 		pixel = new int[w * h];
-		PixelGrabber grab = new PixelGrabber(image, 0, 0, w, h, pixel, 0, w);
+		grab = new PixelGrabber(image, 0, 0, w, h, pixel, 0, w);
 		try {
 			grab.grabPixels();
 		} catch (InterruptedException e) {
@@ -65,5 +66,13 @@ public class MyImage {
 			for (int j = 0; j < morphMatrix.getData().length; j++) {
 				this.morphMatrix.getData()[i][j] = morphMatrix.getData()[i][j];
 			}		}
+	}
+	public void resetPixel() {
+		try {
+			grab.grabPixels();
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 }
