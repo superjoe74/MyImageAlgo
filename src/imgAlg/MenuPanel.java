@@ -3,10 +3,7 @@ package imgAlg;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
-import java.io.File;
-import java.io.IOException;
 
-import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JColorChooser;
@@ -18,6 +15,7 @@ public class MenuPanel extends JPanel{
 	
 	private JButton col_1;
 	private JButton col_2;
+	private JButton reset;
 	
 	private MenuPanelButton drawLine;
 	private MenuPanelButton drawCircle;
@@ -52,6 +50,11 @@ public class MenuPanel extends JPanel{
 		
 		cut = new MenuPanelButton("icons/cut_white.png", "icons/cut_green.png");
 		add(cut);
+		
+		reset = new JButton();
+		reset.setPreferredSize(new Dimension(30, 30));
+		reset.setIcon(new ImageIcon("icons/reset.png"));
+		add(reset);
 		
 		current = drawLine;
 		addListeners();
