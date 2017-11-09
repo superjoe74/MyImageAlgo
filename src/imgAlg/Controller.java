@@ -11,7 +11,7 @@ public class Controller {
 		view = new View(model);
 		view.getFade().addActionListener(e -> {
 			if (imageFader == null) {
-				imageFader = new ImageFade(model.getImages(), view.getcPan());
+				imageFader = new ImageFade(model.getImages(), view.getcPan(), view.getsPan());
 			} else {
 				imageFader.setActive(false);
 				imageFader = null;

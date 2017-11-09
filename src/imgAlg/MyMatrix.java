@@ -69,7 +69,7 @@ public class MyMatrix {
 	
 	public static MyMatrix getRotationMatrix(int a) {
 		double radian = Math.toRadians(a);
-		double[][] d = {{Math.cos(-radian),Math.sin(-radian),0},{-Math.sin(-radian),Math.cos(-radian),0},{0,0,1}};
+		double[][] d = {{Math.cos(-radian),-Math.sin(-radian),0},{Math.sin(-radian),Math.cos(-radian),0},{0,0,1}};
 		MyMatrix m = new MyMatrix(d);
 		return m;
 	}

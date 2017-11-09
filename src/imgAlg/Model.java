@@ -1,39 +1,33 @@
 package imgAlg;
 
-import java.awt.Dimension;
 import java.util.ArrayList;
 
 public class Model {
 	
-	private final Dimension initSize;
+	
 	private ArrayList<MyImage> images;
-	private final Dimension bigDim;
-	private final Dimension littleDim;
+	private int IMG_WIDTH;
+	private int IMG_HEIGHT;
 	
 	public Model(int width, int height) {
-		initSize = new Dimension(width, height);
 		images = new ArrayList<MyImage>(10);
-		bigDim = new Dimension(1280, 720);
-		littleDim = new Dimension(128, 72);
-	}
-
-	public Dimension getInitSize() {
-		return initSize;
+		IMG_WIDTH = width;
+		IMG_HEIGHT = height;
 	}
 
 	public void addImage(MyImage image) {
 		images.add(image);
 	}
 
-	public Dimension getBigDim() {
-		return bigDim;
-	}
-
-	public Dimension getLittleDim() {
-		return littleDim;
-	}
-
 	public ArrayList<MyImage> getImages() {
 		return images;
+	}
+
+	public int getIMG_WIDTH() {
+		return IMG_WIDTH;
+	}
+
+	public int getIMG_HEIGHT() {
+		return IMG_HEIGHT;
 	}
 }

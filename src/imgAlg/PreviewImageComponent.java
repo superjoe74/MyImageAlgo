@@ -21,7 +21,7 @@ public class PreviewImageComponent extends JComponent {
 	@Override
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
-		if (img.getPixel()[500000] == cP.getPixel()[500000]) {
+		if (cP.getCurrentImg() == img) {
 			g.drawImage(img.getImage(), 0, 0, getWidth(), getHeight(), this);
 		}else {
 			g.drawImage(img.getImage(), 19, 11, getWidth() - 38, getHeight() - 22, this);

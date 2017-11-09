@@ -1,7 +1,6 @@
 package imgAlg;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Image;
@@ -9,7 +8,6 @@ import java.awt.MediaTracker;
 import java.io.File;
 
 import javax.imageio.ImageIO;
-import javax.swing.JColorChooser;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
@@ -35,8 +33,8 @@ public class View extends JFrame {
 		setLocationRelativeTo(null);
 
 		fC.selectImages();
-
-		cPan = new CenterPanel();
+System.out.println(model.getIMG_WIDTH());
+		cPan = new CenterPanel(model);
 		add(cPan, BorderLayout.CENTER);
 
 		sPan = new SouthPanel(model, cPan);
@@ -54,18 +52,8 @@ public class View extends JFrame {
 		bar.add(file);
 		file.add(fade);
 		
-		MenuPanel mP = new MenuPanel();
+		MenuPanel mP = new MenuPanel(cPan);
 		add(mP, BorderLayout.WEST);
-		mP.getCol_1().addActionListener(e -> {
-			Color color = JColorChooser.showDialog(this, "Choose color", mP.getCol_1().getBackground());
-			mP.getCol_1().setBackground(color);
-			cPan.setCol_1(color.getRGB());
-		});
-		mP.getCol_2().addActionListener(e -> {
-			Color color = JColorChooser.showDialog(this, "Choose color", mP.getCol_2().getBackground());
-			mP.getCol_2().setBackground(color);
-			cPan.setCol_2(color.getRGB());
-		});
 		
 		setVisible(true);
 	}
@@ -91,7 +79,7 @@ public class View extends JFrame {
 					Image img = ImageIO.read(files[i]);
 					mt.addImage(img, i);
 					mt.waitForAll();
-					model.addImage(new MyImage(img, model.getBigDim().width, model.getBigDim().height));
+					model.addImage(new MyImage(img, model.getIMG_WIDTH(), model.getIMG_HEIGHT()));
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
