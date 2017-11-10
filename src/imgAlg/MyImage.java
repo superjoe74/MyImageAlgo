@@ -75,12 +75,10 @@ public class MyImage {
 			}		}
 	}
 	public void resetPixel() {
-		try {
-			grab.grabPixels();
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		for (int i = 0; i < currentPixel.length; i++) {
+			currentPixel[i] = oldPixel[i];
 		}
+		src.newPixels();
 	}
 
 	public void setCurrentPixel(int i, int j) {

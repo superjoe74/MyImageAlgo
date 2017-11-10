@@ -64,7 +64,9 @@ public class MenuPanel extends JPanel{
 		col_1.addActionListener(e -> {
 			Color color = JColorChooser.showDialog(this, "Choose color", col_1.getBackground());
 			col_1.setBackground(color);
+			col_2.setBackground(color);
 			cPan.setCol_1(color.getRGB());
+			cPan.setCol_2(color.getRGB());
 		});
 		
 		col_2.addActionListener(e -> {
@@ -100,6 +102,10 @@ public class MenuPanel extends JPanel{
 			cut.activate();
 			current = cut;
 		});
-	
+		
+		reset.addActionListener(e -> {
+			cPan.getCurrentImg().resetPixel();
+			cPan.repaint();
+		});
 	}
 }

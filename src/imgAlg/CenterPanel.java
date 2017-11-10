@@ -25,6 +25,8 @@ public class CenterPanel extends JComponent {
 	private int col_1 = 0xffff0000;
 	private int col_2 = 0xff00ff00;
 
+	private int[] selectedPixel;
+
 	public CenterPanel(Model model) {
 		setBackground(new Color(0xffff0000));
 
@@ -37,6 +39,8 @@ public class CenterPanel extends JComponent {
 		workSrc = new MemoryImageSource(IMG_WIDTH, IMG_HEIGHT, workPixel, 0, IMG_WIDTH);
 		workSrc.setAnimated(true);
 		workImage = createImage(workSrc);
+		
+		selectedPixel = new int[IMG_WIDTH * IMG_HEIGHT];
 
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -44,8 +48,6 @@ public class CenterPanel extends JComponent {
 
 				x0 = e.getX() - (getWidth() / 2 - 640);
 				y0 = e.getY() - (getHeight() / 2 - 360);
-				// scaling(0.9, 0.9);
-				// rotation(15,true);
 
 			}
 
@@ -54,20 +56,40 @@ public class CenterPanel extends JComponent {
 				clearPix();
 				x1 = e.getX() - (getWidth() / 2 - 640);
 				y1 = e.getY() - (getHeight() / 2 - 360);
+
+				if (mode != "cut") {
+					
+					if (mode == "line") {
+						drawLine(x0, y0, x1, y1);
+					} else if (mode == "circle") {
+						drawCircle(x0, y0, (int) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)), false);
+					} else if (mode == "filled circle") {
+						drawCircle(x0, y0, (int) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)), true);
+					}
+					
+					currentImg.writePixel(workPixel);
+					clearPix();
+					workSrc.newPixels();
 				
-				if (mode == "line") {
-					drawLine(x0, y0, x1, y1);
-				}else if (mode == "circle") {
-					drawCircle(x0, y0, (int) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)), false);
-				}else if (mode == "filled circle") {
-					drawCircle(x0, y0, (int) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)), true);
-				}else if (mode == "cut") {
-					drawQuad(x0, y0, x1, y1);
+				} else {
+					clearPix();
+					getSelectedPixel(x0, y0, x1, y1);
+//					clearPix();
+//					scaling(2, 2);
+					rotation(111, true);
+					workSrc.newPixels();
 				}
-				
-				currentImg.writePixel(workPixel);
-				clearPix();
-				workSrc.newPixels();
+			}
+
+			private void getSelectedPixel(int x0, int y0, int x1, int y1) {
+				for (int i = 0; i < 1280; i++) {
+					for (int j = 0; j < 720; j++) {
+						if (i >= x0 && i <= x1 && j >= y0 && j <= y1) {
+							selectedPixel[j * 1280 + i] = currentImg.getCurrentPixel()[j * 1280 + i];
+							workPixel[j * 1280 + i] = currentImg.getCurrentPixel()[j * 1280 + i];
+						}
+					}
+				}
 			}
 
 		});
@@ -77,17 +99,17 @@ public class CenterPanel extends JComponent {
 				clearPix();
 				x1 = e.getX() - (getWidth() / 2 - 640);
 				y1 = e.getY() - (getHeight() / 2 - 360);
-				
+
 				if (mode == "line") {
 					drawLine(x0, y0, x1, y1);
-				}else if (mode == "circle") {
+				} else if (mode == "circle") {
 					drawCircle(x0, y0, (int) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)), false);
-				}else if (mode == "filled circle") {
+				} else if (mode == "filled circle") {
 					drawCircle(x0, y0, (int) Math.sqrt((x0 - x1) * (x0 - x1) + (y0 - y1) * (y0 - y1)), true);
-				}else if (mode == "cut") {
+				} else if (mode == "cut") {
 					drawQuad(x0, y0, x1, y1);
 				}
-				
+
 				workSrc.newPixels();
 			}
 		});
@@ -116,13 +138,13 @@ public class CenterPanel extends JComponent {
 
 	}
 
-	public void rotation(double d, boolean b) {
+	public void rotation(int d, boolean b) {
 		if (b) {
-			MyMatrix dif = MyMatrix.getTranslationMatrix(-640, -360).mult(MyMatrix.getRotationMatrix(15))
-					.mult(MyMatrix.getTranslationMatrix(640, 360));
+			MyMatrix dif = MyMatrix.getTranslationMatrix(-x0, -y0).mult(MyMatrix.getRotationMatrix(d))
+					.mult(MyMatrix.getTranslationMatrix(x0, y0));
 			morph(dif);
 		} else {
-			MyMatrix dif = MyMatrix.getRotationMatrix(20);
+			MyMatrix dif = MyMatrix.getRotationMatrix(d);
 			morph(dif);
 		}
 	}
@@ -150,10 +172,9 @@ public class CenterPanel extends JComponent {
 				MyGeoVector newCords = currentImg.getMorphMatrix().mult(cords);
 				if ((newCords.getData()[0] >= 0) && (newCords.getData()[0] < 1280) && (newCords.getData()[1] >= 0)
 						&& (newCords.getData()[1] < 720)) {
-					workPixel[j * 1280 + i] = currentImg
-							.getCurrentPixel()[(1280 * newCords.getData()[1] + newCords.getData()[0])];
+					workPixel[j * 1280 + i] = selectedPixel[(1280 * newCords.getData()[1] + newCords.getData()[0])];
 				} else {
-					workPixel[j * 1280 + i] = 0xffffffff;
+					workPixel[j * 1280 + i] = 0x00000000;
 				}
 			}
 		}
@@ -290,8 +311,8 @@ public class CenterPanel extends JComponent {
 
 	public void setCurrentImg(MyImage img) {
 		currentImg = img;
-		clearPix();
-		workSrc.newPixels();
+//		clearPix();
+//		workSrc.newPixels();
 		repaint();
 	}
 

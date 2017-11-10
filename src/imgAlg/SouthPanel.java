@@ -30,7 +30,6 @@ public class SouthPanel extends JPanel{
 						pic.getImg().setSelectedForFade(!pic.getImg().isSelectedForFade());
 					else {
 						cPan.setCurrentImg(pic.getImg());
-						cPan.setMode("line");
 						pic.repaint();
 						repaint();
 					}
