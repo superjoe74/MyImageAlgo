@@ -13,6 +13,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -31,9 +32,10 @@ public class View extends JFrame {
 		setSize(1600, 900);
 		setDefaultCloseOperation(EXIT_ON_CLOSE);
 		setLocationRelativeTo(null);
+		
 
 		fC.selectImages();
-System.out.println(model.getIMG_WIDTH());
+		System.out.println(model.getIMG_WIDTH());
 		cPan = new CenterPanel(model);
 		add(cPan, BorderLayout.CENTER);
 
@@ -45,14 +47,97 @@ System.out.println(model.getIMG_WIDTH());
 		add(scroll, BorderLayout.SOUTH);
 		
 		JMenuBar bar = new JMenuBar();
-		JMenu file = new JMenu("File");
+		JMenu fader = new JMenu("Fade");
 		fade = new JMenuItem("start/stop fading");
 		fade.setAccelerator(KeyStroke.getKeyStroke("control f"));
 		setJMenuBar(bar);
-		bar.add(file);
-		file.add(fade);
+		bar.add(fader);
+		fader.add(fade);
 		
-		MenuPanel mP = new MenuPanel(cPan);
+		
+		
+		JMenu histo = new JMenu("Histogramm");
+		JMenuItem create = new JMenuItem("create Histogramm");
+		create.addActionListener(e -> {
+			cPan.createHistogramm(cPan.getCurrentImg());
+		});
+		
+		histo.add(create);
+		
+		JMenu settings = new JMenu("Settings");
+		JMenuItem translation = new JMenuItem("Translation Value");
+		JMenuItem upscaling = new JMenuItem("Upscaling Value");
+		JMenuItem downscaling = new JMenuItem("Downscaling Value");		
+		JMenuItem xshearing = new JMenuItem("x-Shearing Value");
+		JMenuItem yshearing = new JMenuItem("y-Shearing Value");
+		JMenuItem rotate = new JMenuItem("Rotation Value");
+		
+		translation.addActionListener(e -> {
+			String s = JOptionPane.showInputDialog("x: ");
+			try {
+				model.setStandardTranslation(Integer.parseInt(s));
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(this, "Nur Integer-Werte!");
+			}
+		});
+		
+		rotate.addActionListener(e -> {
+			String s = JOptionPane.showInputDialog("Angle (degree): ");
+			try {
+				model.setStandardRotation(Integer.parseInt(s));
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(this, "Nur Integer-Werte!");
+			}
+		});
+		
+		downscaling.addActionListener(e -> {
+			String s = JOptionPane.showInputDialog("scalefactor: ");
+			try {
+				model.setStandardDownScaling(Double.parseDouble(s));
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(this, "Nur Double-Werte!");
+			}
+		});
+		
+		upscaling.addActionListener(e -> {
+			String s = JOptionPane.showInputDialog("scalefactor: ");
+			try {
+				model.setStandardUpScaling(Double.parseDouble(s));
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(this, "Nur Double-Werte!");
+			}
+		});
+		
+		xshearing.addActionListener(e -> {
+			String s = JOptionPane.showInputDialog("scalefactor: ");
+			try {
+				model.setStandardUpScaling(Double.parseDouble(s));
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(this, "Nur Double-Werte!");
+			}
+		});
+		
+		yshearing.addActionListener(e -> {
+			String s = JOptionPane.showInputDialog("scalefactor: ");
+			try {
+				model.setStandardUpScaling(Double.parseDouble(s));
+			} catch (Exception e2) {
+				JOptionPane.showMessageDialog(this, "Nur Double-Werte!");
+			}
+		});
+		
+		bar.add(settings);
+		settings.add(rotate);
+		settings.add(yshearing);
+		settings.add(xshearing);
+		settings.add(downscaling);
+		settings.add(upscaling);
+		settings.add(translation);
+		
+
+		bar.add(histo);
+		
+		MenuPanel mP = new MenuPanel(cPan, model);
 		add(mP, BorderLayout.WEST);
 		
 		setVisible(true);
@@ -66,7 +151,7 @@ System.out.println(model.getIMG_WIDTH());
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("Images", "jpg", "png");
 			setFileFilter(filter);
 			setMultiSelectionEnabled(true);
-			setCurrentDirectory(new File("C:\\Users\\Johann\\OneDrive\\images"));
+			setCurrentDirectory(new File("C:\\Users\\Johann Hoffer\\OneDrive\\images"));
 		}
 
 		public void selectImages() {

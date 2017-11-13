@@ -6,6 +6,10 @@ import java.awt.Image;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.MemoryImageSource;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.util.TreeMap;
 
 import javax.swing.JComponent;
 
@@ -26,6 +30,9 @@ public class CenterPanel extends JComponent {
 	private int col_2 = 0xff00ff00;
 
 	private int[] selectedPixel;
+	private MyMatrix selectedHistory;
+	
+	private boolean unsavedContent;
 
 	public CenterPanel(Model model) {
 		setBackground(new Color(0xffff0000));
@@ -41,6 +48,7 @@ public class CenterPanel extends JComponent {
 		workImage = createImage(workSrc);
 		
 		selectedPixel = new int[IMG_WIDTH * IMG_HEIGHT];
+		selectedHistory = MyMatrix.getNeutralMatrix();
 
 		addMouseListener(new MouseAdapter() {
 			@Override
@@ -76,8 +84,8 @@ public class CenterPanel extends JComponent {
 					getSelectedPixel(x0, y0, x1, y1);
 //					clearPix();
 //					scaling(2, 2);
-					rotation(111, true);
 					workSrc.newPixels();
+					setUnsavedContent(true);
 				}
 			}
 
@@ -87,6 +95,7 @@ public class CenterPanel extends JComponent {
 						if (i >= x0 && i <= x1 && j >= y0 && j <= y1) {
 							selectedPixel[j * 1280 + i] = currentImg.getCurrentPixel()[j * 1280 + i];
 							workPixel[j * 1280 + i] = currentImg.getCurrentPixel()[j * 1280 + i];
+							currentImg.getCurrentPixel()[j * 1280 + i] = 0;
 						}
 					}
 				}
@@ -115,11 +124,15 @@ public class CenterPanel extends JComponent {
 		});
 	}
 
-	private void clearPix() {
+	public void clearPix() {
 		for (int i = 0; i < workPixel.length; i++) {
 			workPixel[i] = 0;
+			selectedPixel[i] = 0;
 		}
+		workSrc.newPixels();
 	}
+	
+	
 
 	@Override
 	public void paintComponent(Graphics g) {
@@ -134,51 +147,86 @@ public class CenterPanel extends JComponent {
 
 	public void translation(int x, int y) {
 		MyMatrix dif = MyMatrix.getTranslationMatrix(x, y);
-		morph(dif);
-
+		if (unsavedContent) {
+			morph(dif, selectedHistory, selectedPixel, workPixel);
+		}else {
+			morph(dif, currentImg.getMorphMatrix(), currentImg.getOriginalPixel(), currentImg.getCurrentPixel());
+		}
 	}
 
 	public void rotation(int d, boolean b) {
 		if (b) {
-			MyMatrix dif = MyMatrix.getTranslationMatrix(-x0, -y0).mult(MyMatrix.getRotationMatrix(d))
-					.mult(MyMatrix.getTranslationMatrix(x0, y0));
-			morph(dif);
+			
+			if (unsavedContent) {
+				MyMatrix dif = MyMatrix.getTranslationMatrix(-(x0 + (x1 - x0)/2), -(y0 + (y1 - y0)/2)).mult(MyMatrix.getRotationMatrix(d))
+						.mult(MyMatrix.getTranslationMatrix(x0 + (x1 - x0)/2, y0 + (y1 - y0)/2));
+				morph(dif, selectedHistory, selectedPixel, workPixel);
+			}else {
+				MyMatrix dif = MyMatrix.getTranslationMatrix(-IMG_WIDTH/2, -IMG_HEIGHT/2).mult(MyMatrix.getRotationMatrix(d))
+						.mult(MyMatrix.getTranslationMatrix(IMG_WIDTH/2, IMG_HEIGHT/2));
+				morph(dif, currentImg.getMorphMatrix(), currentImg.getOriginalPixel(), currentImg.getCurrentPixel());
+			}
 		} else {
 			MyMatrix dif = MyMatrix.getRotationMatrix(d);
-			morph(dif);
+			if (unsavedContent) {
+				morph(dif, selectedHistory, selectedPixel, workPixel);
+			}else {
+				morph(dif, currentImg.getMorphMatrix(), currentImg.getOriginalPixel(), currentImg.getCurrentPixel());
+			}
 		}
 	}
 
 	public void yShearing(double y) {
 		MyMatrix dif = MyMatrix.yShearMatrix(y);
-		morph(dif);
+		if (unsavedContent) {
+			morph(dif, selectedHistory, selectedPixel, workPixel);
+		}else {
+			morph(dif, currentImg.getMorphMatrix(), currentImg.getOriginalPixel(), currentImg.getCurrentPixel());
+		}
 	}
 
 	public void xShearing(double x) {
 		MyMatrix dif = MyMatrix.xShearMatrix(x);
-		morph(dif);
+		if (unsavedContent) {
+			morph(dif, selectedHistory, selectedPixel, workPixel);
+		}else {
+			morph(dif, currentImg.getMorphMatrix(), currentImg.getOriginalPixel(), currentImg.getCurrentPixel());
+		}
 	}
 
 	public void scaling(double x, double y) {
 		MyMatrix dif = MyMatrix.getScaleMatrix(x, y);
-		morph(dif);
+		if (unsavedContent) {
+			morph(dif, selectedHistory, selectedPixel, workPixel);
+		}else {
+			morph(dif, currentImg.getMorphMatrix(), currentImg.getOriginalPixel(), currentImg.getCurrentPixel());
+		}
 	}
 
-	public void morph(MyMatrix morphMatrix) {
-		currentImg.setMorphMatrix(currentImg.getMorphMatrix().mult(morphMatrix));
+	public void morph(MyMatrix morphMatrix, MyMatrix historyMatrix, int[] source, int[] goal) {
+		if (unsavedContent) {
+			setHistoryMatrix(historyMatrix.mult(morphMatrix));
+		} else {
+			currentImg.setMorphMatrix(historyMatrix.mult(morphMatrix));
+		}
+		
 		for (int i = 0; i < 1280; i++) {
 			for (int j = 0; j < 720; j++) {
+				if (mode == "xShear") {
+					
+				}
 				MyGeoVector cords = new MyGeoVector(i, j, 1);
-				MyGeoVector newCords = currentImg.getMorphMatrix().mult(cords);
+				MyGeoVector newCords = historyMatrix.mult(cords);
 				if ((newCords.getData()[0] >= 0) && (newCords.getData()[0] < 1280) && (newCords.getData()[1] >= 0)
 						&& (newCords.getData()[1] < 720)) {
-					workPixel[j * 1280 + i] = selectedPixel[(1280 * newCords.getData()[1] + newCords.getData()[0])];
+					goal[j * 1280 + i] = source[(1280 * newCords.getData()[1] + newCords.getData()[0])];
 				} else {
-					workPixel[j * 1280 + i] = 0x00000000;
+					goal[j * 1280 + i] = 0x00000000;
 				}
 			}
 		}
 		workSrc.newPixels();
+		currentImg.refresh();
 		repaint();
 	}
 
@@ -261,14 +309,15 @@ public class CenterPanel extends JComponent {
 	}
 
 	private void setCirclePixel(int x0, int y0, int x, int y, int r) {
-		setPixel(x0 + x, y0 + y, (int) (((x0 + r) + (x0 + x)) / (double) (x0 + r) * 50));
-		setPixel(x0 - x, y0 + y, (int) (((x0 + r) + (x0 - x)) / (double) (x0 + r) * 100));
-		setPixel(x0 + x, y0 - y, (int) (((x0 + r) + (x0 + x)) / (double) (x0 + r) * 100));
-		setPixel(x0 - x, y0 - y, (int) (((x0 + r) + (x0 - x)) / (double) (x0 + r) * 100));
-		setPixel(x0 + y, y0 + x, (int) (((x0 + r) + (x0 + x)) / (double) (x0 + r) * 100));
-		setPixel(x0 - y, y0 + x, (int) (((x0 + r) + (x0 - x)) / (double) (x0 + r) * 100));
-		setPixel(x0 + y, y0 - x, (int) (((x0 + r) + (x0 + x)) / (double) (x0 + r) * 100));
-		setPixel(x0 - y, y0 - x, (int) (((x0 + r) + (x0 - x)) / (double) (x0 + r) * 100));
+		System.out.println(((x0+x - this.x0+r)/(double)(2*r)));
+		setPixel(x0 + x, y0 + y, 0);
+		setPixel(x0 - x, y0 + y, 0);
+		setPixel(x0 + x, y0 - y, 0);
+		setPixel(x0 - x, y0 - y, 0);
+		setPixel(x0 + y, y0 + x, 0);
+		setPixel(x0 - y, y0 + x, 0);
+		setPixel(x0 + y, y0 - x, 0);
+		setPixel(x0 - y, y0 - x, 0);
 	}
 
 	private void setPixel(int x, int y, int p) {
@@ -297,12 +346,52 @@ public class CenterPanel extends JComponent {
 		repaint();
 	}
 
-	public void setMode(String mode) {
-		this.mode = mode;
+	public int[] getWorkPixel() {
+		return workPixel;
+	}
+	
+	public void setHistoryMatrix(MyMatrix morphMatrix) {
+		for (int i = 0; i < morphMatrix.getData().length; i++) {
+			for (int j = 0; j < morphMatrix.getData().length; j++) {
+				selectedHistory.getData()[i][j] = morphMatrix.getData()[i][j];
+			}		}
+	}
+	
+	public void resetHistoryMatrix(){
+		selectedHistory = MyMatrix.getNeutralMatrix();
+		currentImg.setMorphMatrix(MyMatrix.getNeutralMatrix());
+	}
+	
+	public boolean createHistogramm(MyImage img) {
+		PrintWriter writer;
+		try {
+			writer = new PrintWriter("Histogramm.txt", "UTF-8");
+			TreeMap<Integer, Integer> colorMap = new TreeMap<Integer, Integer>();
+	
+			int[] pix = currentImg.getCurrentPixel();
+			for (int i = 0; i < pix.length; ++i) {
+				if (!colorMap.containsKey(pix[i])) {
+					colorMap.put(pix[i], 1);
+				} else {
+					colorMap.put(pix[i], (int) colorMap.get(pix[i]) + 1);
+				}
+			}
+			//Map<Integer,Integer> = new TreeMap(colorMap);
+			for (Integer color : colorMap.keySet()) {
+				writer.println(Integer.toHexString(color) + ": " + (Integer) colorMap.get(color));
+			}
+	
+			writer.close();
+			return true;
+		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			return false;
+		}
 	}
 
-	public void setCol_1(int col_1) {
-		this.col_1 = col_1;
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 
 	public void setCol_2(int col_2) {
@@ -310,13 +399,29 @@ public class CenterPanel extends JComponent {
 	}
 
 	public void setCurrentImg(MyImage img) {
-		currentImg = img;
-//		clearPix();
-//		workSrc.newPixels();
-		repaint();
+			currentImg = img;
+	//		clearPix();
+	//		workSrc.newPixels();
+			repaint();
+		}
+
+	public void setSelectedHistory(MyMatrix selectedHistory) {
+		this.selectedHistory = selectedHistory;
+	}
+
+	public void setCol_1(int col_1) {
+		this.col_1 = col_1;
 	}
 
 	public MyImage getCurrentImg() {
 		return currentImg;
+	}
+
+	public boolean isUnsavedContent() {
+		return unsavedContent;
+	}
+
+	public void setUnsavedContent(boolean unsavedContent) {
+		this.unsavedContent = unsavedContent;
 	}
 }

@@ -1,5 +1,6 @@
 package imgAlg;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 
@@ -25,6 +26,14 @@ public class PreviewImageComponent extends JComponent {
 			g.drawImage(img.getImage(), 0, 0, getWidth(), getHeight(), this);
 		}else {
 			g.drawImage(img.getImage(), 19, 11, getWidth() - 38, getHeight() - 22, this);
+		}
+		if (img.isSelectedForFade()) {
+			g.setColor(Color.RED);
+			if (cP.getCurrentImg() == img) {
+				g.drawRect(0, 0, getWidth()-1, getHeight()-1);
+			}else {
+				g.drawRect(19, 11, getWidth() - 38, getHeight() - 22);
+			}
 		}
 	}
 

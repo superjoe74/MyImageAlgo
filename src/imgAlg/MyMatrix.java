@@ -87,13 +87,13 @@ public class MyMatrix {
 	}
 	
 	public static MyMatrix xShearMatrix(double x) {
-		double[][] d = {{1,1/x,0},{0,1,0},{0,0,1}};
+		double[][] d = {{1,-x,0},{0,1,0},{0,0,1}};
 		MyMatrix m = new MyMatrix(d);
 		return m;
 	}
 	
 	public static MyMatrix yShearMatrix(double y) {
-		double[][] d = {{1,0,0},{1/y,1,0},{0,0,1}};
+		double[][] d = {{1,0,0},{-y,1,0},{0,0,1}};
 		MyMatrix m = new MyMatrix(d);
 		return m;
 	}

@@ -26,9 +26,11 @@ public class SouthPanel extends JPanel{
 				@Override
 				public void mousePressed(MouseEvent e) {
 					
-					if(SwingUtilities.isRightMouseButton(e)) 
+					if(SwingUtilities.isRightMouseButton(e)) { 
 						pic.getImg().setSelectedForFade(!pic.getImg().isSelectedForFade());
-					else {
+						pic.repaint();
+						revalidate();
+					}else {
 						cPan.setCurrentImg(pic.getImg());
 						pic.repaint();
 						repaint();

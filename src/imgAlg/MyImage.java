@@ -55,6 +55,9 @@ public class MyImage {
 	public int[] getCurrentPixel() {
 		return currentPixel;
 	}
+	public int[] getOriginalPixel() {
+		return oldPixel;
+	}
 
 	public boolean isSelectedForFade() {
 		return selectedForFade;
@@ -92,6 +95,9 @@ public class MyImage {
 				currentPixel[i] = workPixel[i];
 			}
 		}
+		src.newPixels();
+	}
+	public void refresh() {
 		src.newPixels();
 	}
 }
