@@ -80,10 +80,22 @@ public class Approximator {
 		return mid;
 	}
 	
-	private int calculateLowestDistance(int col) {
+	private double calculateLowestDistance(int col) {
 		int iRed = searchColor(col, red);
 		int iGreen = searchColor(col, green);
 		int iBlue = searchColor(col, blue);
-		int[] comparables = new int
+		double dist = 500;
+		int[] comparables = {red[iRed], red[iRed+1], green[iGreen], green[iGreen+1], blue[iBlue], blue[iBlue+1]};
+		
+		for (int i = 0; i < comparables.length; i++) {
+			double currDist = Math.sqrt(  (((col >> 16) & 0x000000ff) - ((comparables[i] >> 16) & 0x000000ff)) * (((col >> 16) & 0x000000ff) - ((comparables[i] >> 16) & 0x000000ff))
+										+ (((col >> 8) & 0x000000ff) - ((comparables[i] >> 8) & 0x000000ff)) * (((col >> 8) & 0x000000ff) - ((comparables[i] >> 8) & 0x000000ff))
+										+ ((col & 0x000000ff) - (comparables[i] & 0x000000ff)) * ((col & 0x000000ff) - (comparables[i] & 0x000000ff))
+										);
+			if (currDist < dist) {
+				dist = currDist;
+			}
+		}
+		return dist;
 	}
 }
