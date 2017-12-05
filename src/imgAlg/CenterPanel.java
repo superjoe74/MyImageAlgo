@@ -33,6 +33,8 @@ public class CenterPanel extends JComponent {
 	private MyMatrix selectedHistory;
 	
 	private boolean unsavedContent;
+	
+	private int[][] histogramm;
 
 	public CenterPanel(Model model) {
 		setBackground(new Color(0xffff0000));
@@ -362,10 +364,10 @@ public class CenterPanel extends JComponent {
 		currentImg.setMorphMatrix(MyMatrix.getNeutralMatrix());
 	}
 	
-	public boolean createHistogramm(MyImage img) {
-		PrintWriter writer;
-		try {
-			writer = new PrintWriter("Histogramm.txt", "UTF-8");
+	public int[][] createHistogramm(MyImage img) {
+//		PrintWriter writer;
+//		try {
+//			writer = new PrintWriter("Histogramm.txt", "UTF-8");
 			TreeMap<Integer, Integer> colorMap = new TreeMap<Integer, Integer>();
 	
 			int[] pix = currentImg.getCurrentPixel();
@@ -376,20 +378,64 @@ public class CenterPanel extends JComponent {
 					colorMap.put(pix[i], (int) colorMap.get(pix[i]) + 1);
 				}
 			}
+
+			int[][] histo = new int[2][colorMap.size()];
 			//Map<Integer,Integer> = new TreeMap(colorMap);
+			int i = 0;
 			for (Integer color : colorMap.keySet()) {
-				writer.println(Integer.toHexString(color) + ": " + (Integer) colorMap.get(color));
+				histo[0][i] = color;
+				histo[1][i++] = colorMap.get(color);
+//				writer.println(Integer.toHexString(color) + ": " + (Integer) colorMap.get(color));
 			}
+//			for (int j = 0; j < histo[0].length; j++) {
+//				System.out.println(Integer.toHexString(histo[0][j]) + ": " + histo[1][j]);
+//			}
+			histo = quicksort(histo);
+//			for (int j = 0; j < 100; j++) {
+//				System.out.println(Integer.toHexString(histo[0][j]) + ": " + histo[1][j]);
+//			}
+//			System.out.println(histo[0].length);
+			return histo;
 	
-			writer.close();
-			return true;
-		} catch (FileNotFoundException | UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			return false;
-		}
+//			writer.close();
+//			return true;
+//		} catch (FileNotFoundException | UnsupportedEncodingException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//			return false;
+//		}
+	}
+	private int[][] quicksort(int[][] array) {
+		return quicksort_helper(array, 0, array[0].length-1);
 	}
 
+	private int[][] quicksort_helper(int[][] array, int left, int right) {
+			int mid = array[1][(left + right) / 2];
+			int l = left;
+			int r = right;
+			
+			while(l < r) {
+				while(array[1][l] > mid) { ++l; }
+				while(array[1][r] < mid) { --r; }
+				if(l <= r)
+					swap(array, l++, r--);
+			}
+			if (left < r)
+				quicksort_helper(array, left, r );
+			if (right > l)
+				quicksort_helper(array, l, right);
+			return array;
+	}
+
+	private void swap(int[][] array, int i, int j) {
+		int tmp0 = array[0][i];
+		int tmp1 = array[1][i];
+		array[0][i] = array[0][j];
+		array[1][i] = array[1][j];
+		array[0][j] = tmp0;
+		array[1][j] = tmp1;
+	}
+	
 	public void setMode(String mode) {
 		this.mode = mode;
 	}
