@@ -79,7 +79,7 @@ public class Approximator {
 			while (((col[l] >> i) & 0x000000ff) < mid) {
 				++l;
 			}
-			while (((col[l] >> i) & 0x000000ff) > mid) {
+			while (((col[r] >> i) & 0x000000ff) > mid) {
 				--r;
 			}
 			if (l <= r)
@@ -97,24 +97,29 @@ public class Approximator {
 		array[j] = tmp0;
 	}
 
-	private int searchColor(int col, int[] search) {
-		int l = 0;
+	private int searchColor(int col, int[] search, int shift) {
+		int l = 0; 
 		int r = search.length - 1;
 		int mid = 0;
 		while (l <= r) {
 			mid = (l + r) / 2;
-			if (search[mid] < col)
+			if (((search[mid] >> shift) & 0xff) < ((col >> shift) & 0xff))
 				l = mid + 1;
 			else
 				r = mid - 1;
 		}
-		return mid;
+		if (mid == search.length - 1) {
+			return mid-1;
+		}
+		else {
+			return mid;
+		}
 	}
 	
-	private void getClosestColor(int col) {
-		iRed = searchColor(col, red);
-		iGreen = searchColor(col, green);
-		iBlue = searchColor(col, blue);
+	private void getClosestColor(int col) { 
+		iRed = searchColor(col, red, 16);
+		iGreen = searchColor(col, green, 8);
+		iBlue = searchColor(col, blue, 0);
 		double dist = 500;
 		int[] comparables = {red[iRed], red[iRed+1], green[iGreen], green[iGreen+1], blue[iBlue], blue[iBlue+1]};
 		
@@ -147,23 +152,23 @@ public class Approximator {
 	
 	private void searchColorPartForward(int[] color, int index, int shift, int colToReplace) {
 		int offset = 0;
-		while (((index + 1 + offset) < color.length) && (((color[index + 1 + offset] >> shift) & 0x000000ff)) < (((colToReplace >> 16) & 0x000000ff) + currentDist)) {
-			double newDist = calculateDistance(colToReplace, color[index + 1 + offset]);
+		while (index + offset) {
+			double newDist = calculateDistance(colToReplace, color[index + offset]);
 			if (newDist < currentDist) {
 				currentDist = newDist;
-				currentCol = color[index + 1 + offset];
+				currentCol = color[index + offset];
 			}
 			++offset;
 		}
 	}
 	
 	private void searchColorPartBackward(int[] color, int index, int shift, int colToReplace) {
-		int offset = -1;
-		while (((index + 1 + offset) > -1) && (((color[index + 1 + offset] >> shift) & 0x000000ff)) < (((colToReplace >> 16) & 0x000000ff) + currentDist)) {
-			double newDist = calculateDistance(colToReplace, color[index + 1 + offset]);
+		int offset = 0;
+		while () {
+			double newDist = calculateDistance(colToReplace, color[index + offset]);
 			if (newDist < currentDist) {
 				currentDist = newDist;
-				currentCol = color[index + 1 + offset];
+				currentCol = color[index + offset];
 			}
 			--offset;
 		}

@@ -86,7 +86,7 @@ public class MyImage {
 
 	public void setCurrentPixel(int i, int j) {
 		currentPixel[i] = j;
-		src.newPixels();
+//		src.newPixels();
 	}
 
 	public void writePixel(int[] workPixel) {

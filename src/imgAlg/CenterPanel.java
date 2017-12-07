@@ -443,16 +443,22 @@ public class CenterPanel extends JComponent {
 	class ApproxAdjuster extends JDialog{
 		public ApproxAdjuster() {
 			setLayout(new FlowLayout());
-			JSlider slide = new JSlider(JSlider.HORIZONTAL, 1, 100, 100);
-			approx = new Approximator(histogramm);
+			JSlider slide = new JSlider(JSlider.HORIZONTAL, 1, 100, 100); 
 			slide.addChangeListener(e -> {
-				
-			}); 
-			approx.setLastColorIndex(222);
-			approx.approximate();
-			for (int i = 0; i < currentImg.getCurrentPixel().length; i++) {
-				currentImg.setCurrentPixel(i, approx.getColorMap().get(currentImg.getCurrentPixel()[i]));
-			}
+				if (!slide.getValueIsAdjusting()) {
+					currentImg.resetPixel();
+					approx = new Approximator(histogramm);
+					approx.setLastColorIndex((int) (approx.getOrgColors()[0].length * (slide.getValue()/(double)100)));
+					approx.approximate();
+					for (int i = 0; i < currentImg.getCurrentPixel().length; i++) {
+//						System.out.println(i);
+						currentImg.setCurrentPixel(i, approx.getColorMap().get(currentImg.getCurrentPixel()[i]));
+					}
+					currentImg.refresh();
+					repaint();
+					System.out.println("finished");
+				}
+			});
 			add(slide);
 			pack();
 			setVisible(true);
