@@ -2,11 +2,10 @@ package imgAlg;
 
 import java.util.HashMap;
 
-import javax.swing.JDialog;
-
 public class Approximator {
 	private int lastColorIndex;
 	private int[][] orgColors;
+	
 	private int[] red;
 	private int[] green;
 	private int[] blue;
@@ -19,13 +18,26 @@ public class Approximator {
 
 	public Approximator(int[][] colors) {
 		orgColors = colors;
+		colorMap = new HashMap<Integer, Integer>();
 		for (int i = 0; i < orgColors[0].length; i++) {
 			colorMap.put(orgColors[0][i], orgColors[0][i]);
 		}
 	}
 	
-	private void approximate(int color) {
-		
+	public void approximate() {
+		getReducedColors();
+		for (int i = lastColorIndex + 1; i < orgColors[0].length; i++) {
+			getClosestColor(orgColors[0][i]);
+			colorMap.put(orgColors[0][i], currentCol);
+		}
+	}
+	
+	public int[][] getOrgColors() {
+		return orgColors;
+	}
+
+	public void setLastColorIndex(int lastColorIndex) {
+		this.lastColorIndex = lastColorIndex;
 	}
 
 	private void getReducedColors() {
@@ -37,6 +49,10 @@ public class Approximator {
 		quicksortColor(red, 16);
 		quicksortColor(green, 8);
 		quicksortColor(blue, 0);
+	}
+
+	public HashMap<Integer, Integer> getColorMap() {
+		return colorMap;
 	}
 
 	private void copyColorArray() {
@@ -52,7 +68,7 @@ public class Approximator {
 	}
 
 	private void quicksortColor(int[] col, int i) {
-		quicksortColor_help(col, i, 0, col.length);
+		quicksortColor_help(col, i, 0, col.length-1);
 	}
 
 	private void quicksortColor_help(int[] col, int i, int left, int right) {
@@ -131,28 +147,26 @@ public class Approximator {
 	
 	private void searchColorPartForward(int[] color, int index, int shift, int colToReplace) {
 		int offset = 0;
-		while (((index + 1 + offset) < color.length) && (((color[index + 1 + offset++] >> shift) & 0x000000ff)) < (((colToReplace >> 16) & 0x000000ff) + currentDist)) {
+		while (((index + 1 + offset) < color.length) && (((color[index + 1 + offset] >> shift) & 0x000000ff)) < (((colToReplace >> 16) & 0x000000ff) + currentDist)) {
 			double newDist = calculateDistance(colToReplace, color[index + 1 + offset]);
 			if (newDist < currentDist) {
 				currentDist = newDist;
 				currentCol = color[index + 1 + offset];
 			}
+			++offset;
 		}
 	}
 	
 	private void searchColorPartBackward(int[] color, int index, int shift, int colToReplace) {
-		int offset = 0;
-		while (((index + 1 + offset) > -1) && (((color[index + 1 + offset--] >> shift) & 0x000000ff)) < (((colToReplace >> 16) & 0x000000ff) + currentDist)) {
+		int offset = -1;
+		while (((index + 1 + offset) > -1) && (((color[index + 1 + offset] >> shift) & 0x000000ff)) < (((colToReplace >> 16) & 0x000000ff) + currentDist)) {
 			double newDist = calculateDistance(colToReplace, color[index + 1 + offset]);
 			if (newDist < currentDist) {
 				currentDist = newDist;
 				currentCol = color[index + 1 + offset];
 			}
+			--offset;
 		}
 	}
-	class ApproxAdjuster extends JDialog{
-		public ApproxAdjuster() {
-			// TODO Auto-generated constructor stub
-		}
-	}
+	
 }

@@ -61,8 +61,13 @@ public class View extends JFrame {
 		create.addActionListener(e -> {
 			cPan.createHistogramm(cPan.getCurrentImg());
 		});
+		JMenuItem approx = new JMenuItem("approx");
+		approx.addActionListener(e -> {
+			cPan.name();
+		});
 		
 		histo.add(create);
+		histo.add(approx);
 		
 		JMenu settings = new JMenu("Settings");
 		JMenuItem translation = new JMenuItem("Translation Value");

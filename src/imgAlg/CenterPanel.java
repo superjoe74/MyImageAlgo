@@ -1,6 +1,7 @@
 package imgAlg;
 
 import java.awt.Color;
+import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.MouseAdapter;
@@ -12,6 +13,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.TreeMap;
 
 import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JSlider;
 
 public class CenterPanel extends JComponent {
 
@@ -35,6 +38,7 @@ public class CenterPanel extends JComponent {
 	private boolean unsavedContent;
 	
 	private int[][] histogramm;
+	private Approximator approx;
 
 	public CenterPanel(Model model) {
 		setBackground(new Color(0xffff0000));
@@ -364,7 +368,7 @@ public class CenterPanel extends JComponent {
 		currentImg.setMorphMatrix(MyMatrix.getNeutralMatrix());
 	}
 	
-	public int[][] createHistogramm(MyImage img) {
+	public void createHistogramm(MyImage img) {
 //		PrintWriter writer;
 //		try {
 //			writer = new PrintWriter("Histogramm.txt", "UTF-8");
@@ -379,23 +383,23 @@ public class CenterPanel extends JComponent {
 				}
 			}
 
-			int[][] histo = new int[2][colorMap.size()];
+			histogramm = new int[2][colorMap.size()];
 			//Map<Integer,Integer> = new TreeMap(colorMap);
 			int i = 0;
 			for (Integer color : colorMap.keySet()) {
-				histo[0][i] = color;
-				histo[1][i++] = colorMap.get(color);
+				histogramm[0][i] = color;
+				histogramm[1][i++] = colorMap.get(color);
 //				writer.println(Integer.toHexString(color) + ": " + (Integer) colorMap.get(color));
 			}
 //			for (int j = 0; j < histo[0].length; j++) {
 //				System.out.println(Integer.toHexString(histo[0][j]) + ": " + histo[1][j]);
 //			}
-			histo = quicksort(histo);
+			histogramm = quicksort(histogramm);
 //			for (int j = 0; j < 100; j++) {
 //				System.out.println(Integer.toHexString(histo[0][j]) + ": " + histo[1][j]);
 //			}
 //			System.out.println(histo[0].length);
-			return histo;
+			System.out.println("GG");
 	
 //			writer.close();
 //			return true;
@@ -434,6 +438,29 @@ public class CenterPanel extends JComponent {
 		array[1][i] = array[1][j];
 		array[0][j] = tmp0;
 		array[1][j] = tmp1;
+	}
+	
+	class ApproxAdjuster extends JDialog{
+		public ApproxAdjuster() {
+			setLayout(new FlowLayout());
+			JSlider slide = new JSlider(JSlider.HORIZONTAL, 1, 100, 100);
+			approx = new Approximator(histogramm);
+			slide.addChangeListener(e -> {
+				
+			}); 
+			approx.setLastColorIndex(222);
+			approx.approximate();
+			for (int i = 0; i < currentImg.getCurrentPixel().length; i++) {
+				currentImg.setCurrentPixel(i, approx.getColorMap().get(currentImg.getCurrentPixel()[i]));
+			}
+			add(slide);
+			pack();
+			setVisible(true);
+		}
+	}
+	
+	public void name() {
+		new ApproxAdjuster();
 	}
 	
 	public void setMode(String mode) {
