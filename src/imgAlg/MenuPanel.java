@@ -170,7 +170,7 @@ public class MenuPanel extends JPanel{
 			cPan.resetHistoryMatrix();
 			cPan.clearPix();
 			cPan.repaint();
-		});
+		});                     
 		
 		save.addActionListener(e -> {
 			cPan.getCurrentImg().writePixel(cPan.getWorkPixel());

@@ -4,6 +4,7 @@ import java.util.HashMap;
 
 public class Approximator {
 	private int lastColorIndex;
+	
 	private int[][] orgColors;
 	
 	private int[] red;
@@ -13,15 +14,17 @@ public class Approximator {
 	private int iGreen;
 	private int iBlue;
 	private int currentCol;
+	private int lLimit;
+	private int rLimit;
 	private HashMap<Integer, Integer> colorMap;
-	private double currentDist;
+	private double currentDist = 500;
+	private int currentSquaredDist = 500*500;
+	public static int roots;
 
 	public Approximator(int[][] colors) {
 		orgColors = colors;
 		colorMap = new HashMap<Integer, Integer>();
-		for (int i = 0; i < orgColors[0].length; i++) {
-			colorMap.put(orgColors[0][i], orgColors[0][i]);
-		}
+		resetColormap();
 	}
 	
 	public void approximate() {
@@ -38,6 +41,21 @@ public class Approximator {
 
 	public void setLastColorIndex(int lastColorIndex) {
 		this.lastColorIndex = lastColorIndex;
+	}
+	
+	public int getLastColorIndex() {
+		return lastColorIndex;
+	}
+
+	public void resetDist() {
+		currentDist = 500;
+		currentSquaredDist = 500*500;
+	}
+	
+	public void resetColormap() {
+		for (int i = 0; i < orgColors[0].length; i++) {
+			colorMap.put(orgColors[0][i], orgColors[0][i]);
+		}
 	}
 
 	private void getReducedColors() {
@@ -135,10 +153,11 @@ public class Approximator {
 	}
 	
 	private double calculateDistance(int orgCol, int targCol) {
-		return Math.sqrt((((orgCol >> 16) & 0x000000ff) - ((targCol >> 16) & 0x000000ff)) * (((orgCol >> 16) & 0x000000ff) - ((targCol >> 16) & 0x000000ff))
-					   + (((orgCol >> 8) & 0x000000ff) - ((targCol >> 8) & 0x000000ff)) * (((orgCol >> 8) & 0x000000ff) - ((targCol >> 8) & 0x000000ff))
-				       + ((orgCol & 0x000000ff) - (targCol & 0x000000ff)) * ((orgCol & 0x000000ff) - (targCol & 0x000000ff))
-				       );
+		++roots; 
+		int r = ((orgCol >> 16) & 0xff) - ((targCol >> 16) & 0xff);
+		int g = ((orgCol >> 8) & 0xff) - ((targCol >> 8) & 0xff);
+		int b = (orgCol & 0xff) - (targCol & 0xff);
+		return Math.sqrt(r*r + g*g + b*b);
 	}
 	
 	private void getColorWithLowestDistance(int col) {
@@ -152,11 +171,18 @@ public class Approximator {
 	
 	private void searchColorPartForward(int[] color, int index, int shift, int colToReplace) {
 		int offset = 0;
-		while (index + offset) {
-			double newDist = calculateDistance(colToReplace, color[index + offset]);
-			if (newDist < currentDist) {
-				currentDist = newDist;
+		rLimit = (int) Math.ceil(((colToReplace >> shift) & 0xff) + currentDist);
+		lLimit = (int) Math.floor(((colToReplace >> shift) & 0xff) - currentDist);
+		
+		while (((index + offset) < color.length) && isInRange(color[index + offset], shift)) {
+			int newSquaredDist = getSquaredDist(color[index + offset], colToReplace); 
+			if (newSquaredDist < currentSquaredDist) {
+				currentDist = calculateDistance(colToReplace, color[index + offset]);
 				currentCol = color[index + offset];
+				currentSquaredDist = newSquaredDist;
+				
+				rLimit = (int) Math.ceil(((colToReplace >> shift) & 0xff) + currentDist);
+				lLimit = (int) Math.floor(((colToReplace >> shift) & 0xff) - currentDist);
 			}
 			++offset;
 		}
@@ -164,14 +190,32 @@ public class Approximator {
 	
 	private void searchColorPartBackward(int[] color, int index, int shift, int colToReplace) {
 		int offset = 0;
-		while () {
-			double newDist = calculateDistance(colToReplace, color[index + offset]);
-			if (newDist < currentDist) {
-				currentDist = newDist;
+		rLimit = (int) Math.ceil(((colToReplace >> shift) & 0xff) + currentDist);
+		lLimit = (int) Math.floor(((colToReplace >> shift) & 0xff) - currentDist);
+		
+		while ((index + offset) >= 0 && isInRange(color[index + offset], shift)) {
+			int newSquaredDist = getSquaredDist(color[index + offset], colToReplace); 
+			if (newSquaredDist < currentSquaredDist) {
+				currentDist = calculateDistance(colToReplace, color[index + offset]);
 				currentCol = color[index + offset];
+				currentSquaredDist = newSquaredDist;
+				
+				rLimit = (int) Math.ceil(((colToReplace >> shift) & 0xff) + currentDist);
+				lLimit = (int) Math.floor(((colToReplace >> shift) & 0xff) - currentDist);
 			}
 			--offset;
 		}
+	}
+	
+	private int getSquaredDist(int col, int colToReplace) {
+		int r = (col >> 16) & 0xff - (colToReplace >> 16) & 0xff;
+		int g = (col >> 8) & 0xff - (colToReplace >> 8) & 0xff;
+		int b = col & 0xff - colToReplace & 0xff;
+		return r*r + g*g + b*b;
+	}
+	
+	private boolean isInRange(int color, int shift) {
+		return ((color >> shift) & 0xff) < rLimit && ((color >> shift) & 0xff) > lLimit;
 	}
 	
 }
